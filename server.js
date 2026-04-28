@@ -9,7 +9,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  process.env.FRONTEND_URL, // nanti isi di .env pas deploy
+  process.env.FRONTEND_URL,
   process.env.ADMIN_URL,
 ].filter(Boolean);
 
@@ -46,7 +46,6 @@ const cartRoutes = require("./routes/CartRoutes");
 const adminRoutes = require("./routes/AdminRoutes");
 const favoriteRoutes = require("./routes/FavoriteRoutes");
 const reviewRoutes = require("./routes/ReviewRoutes");
-// (+dari fe) Kategori
 const categoryRoutes = require("./routes/CategoryRoutes");
 
 app.use("/api/favorites", favoriteRoutes);
@@ -58,16 +57,15 @@ app.use("/api/products", productRoutes);
 app.use("/api/files", fileRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/transactions", transactionRoutes);
-// (+dari fe) Kategori
 app.use("/api/categories", categoryRoutes);
 
-// Global error handler — HARUS paling bawah
+// Global error handler
 app.use((err, req, res, next) => {
   console.error("ERROR:", err.message);
   res.status(err.status || 500).json({ message: err.message });
 });
 
-// Start server
+// Start server (local only)
 const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
@@ -81,4 +79,10 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (process.env.NODE_ENV !== "production") {
+  startServer();
+} else {
+  connectDB();
+}
+
+module.exports = app;
